@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<!--
+  ===========================================================================
+  VIRASAT — Jharkhand Heritage Portal (SIH MVP demo)
+  ---------------------------------------------------------------------------
+  CHANGELOG (latest request) — find each item via the [UPDATE] tags below:
+   1. Brand renamed "Jharokha" -> "Virasat" throughout (title, nav logo,
+      footer logo, footer copyright line, i18n dictionary strings).
+   2. Real photographs added to the image banner carousel, sourced from
+      Wikimedia Commons via Special:FilePath hotlinks (freely licensed).
+      See <section class="banner-carousel" id="bannerCarousel"> in the body,
+      and the ".bc-slide / .bc-scrim" rules in <style>.
+   3. Community section explicitly credited to Reddit: a
+      ".reddit-credit-bar" (Snoo-mark SVG logo + r/VirasatJharkhand name +
+      "Open on Reddit" button) added above the review threads, and the
+      Reddit brand orange (--reddit-orange: #FF4500) now drives the
+      upvote/active states in that section only.
+   4. This comment block + the inline "[UPDATE]" comments throughout the
+      <style> and <body> mark exactly what changed and why.
+  ---------------------------------------------------------------------------
+  Earlier request already implemented (kept for reference):
+   - Hero background swapped from flat colour to an illustrated dusk
+     gradient + Sohrai sun-mandala + hill/Sal-tree/temple horizon SVG.
+   - Craft "spotlight" translate-widget section removed entirely.
+   - Map section gained state stats (area/population/districts/capital)
+     and on-map city labels (Ranchi, Jamshedpur, Dhanbad, Bokaro, etc).
+   - New "Plan Your Journey" and "Latest Highlights" sections added.
+  ===========================================================================
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Virasat — Living Heritage of Jharkhand</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500;9..144,600;9..144,700&family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --geru:#B5451B;        /* ochre red - primary pigment */
+    --geru-dark:#8C3414;
+    --kaolin:#EFE6D3;      /* limewash cream - wall base */
+    --kaolin-dim:#E3D7BE;
+    --manganese:#241D1A;   /* charcoal black - ink */
+    --manganese-soft:#3A322C;
+    --sal:#4C6B41;         /* sal forest green */
+    --gold:#C08A2E;        /* verified gold */
+    --paper:#FBF7EE;
+    --line: rgba(36,29,26,0.14);
+    --radius: 2px;
+    --display: 'Fraunces', serif;
+    --body: 'Space Grotesk', sans-serif;
+    --mono: 'IBM Plex Mono', monospace;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--paper);
+    color:var(--manganese);
+    font-family:var(--body);
+    line-height:1.5;
+    overflow-x:hidden;
+  }
+  a{color:inherit; text-decoration:none;}
+  img{max-width:100%;display:block;}
+  .wrap{max-width:1180px; margin:0 auto; padding:0 28px;}
+  ::selection{background:var(--geru); color:var(--kaolin);}
+
+  /* ---------- comb-scraped divider (signature motif) ---------- */
+  .comb-divider{
+    height:14px; width:100%;
+    background-image: repeating-linear-gradient(115deg, var(--manganese) 0 2px, transparent 2px 10px);
+    background-color: var(--geru);
+    opacity:0.9;
+  }
+  .comb-divider.flip{ transform:scaleY(-1); }
+
+  /* ---------- nav ---------- */
+  header{
+    position:sticky; top:0; z-index:50;
+    background:rgba(251,247,238,0.92);
+    backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--line);
+  }
+  nav{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 28px; max-width:1180px; margin:0 auto;
+  }
+  .logo{
+    font-family:var(--display); font-weight:700; font-size:1.5rem;
+    letter-spacing:0.01em; display:flex; align-items:center; gap:10px;
+  }
+  .logo svg{width:30px;height:30px;}
+  .nav-links{display:flex; gap:32px; font-size:0.92rem; font-weight:500;}
+  .nav-links a{position:relative; padding:4px 0; color:var(--manganese-soft);}
+  .nav-links a:hover{color:var(--geru);}
+  .nav-links a::after{
+    content:''; position:absolute; left:0; bottom:0; width:0; height:2px;
+    background:var(--geru); transition:width .25s ease;
+  }
+  .nav-links a:hover::after{width:100%;}
+  .nav-right{display:flex; align-items:center; gap:16px;}
+
+  .lang-switch{
+    position:relative; font-family:var(--mono); font-size:0.78rem;
+  }
+  .lang-btn{
+    display:flex; align-items:center; gap:6px;
+    border:1px solid var(--manganese); background:transparent;
+    padding:7px 12px; cursor:pointer; color:var(--manganese);
+  }
+  .lang-menu{
+    display:none; position:absolute; right:0; top:calc(100% + 6px);
+    background:var(--paper); border:1px solid var(--manganese);
+    min-width:170px; box-shadow:4px 4px 0 var(--manganese);
+  }
+  .lang-menu.open{display:block;}
+  .lang-menu button{
+    display:flex; justify-content:space-between; width:100%;
+    padding:10px 12px; background:none; border:none; cursor:pointer;
+    font-family:var(--mono); font-size:0.78rem; color:var(--manganese);
+    border-bottom:1px solid var(--line); text-align:left;
+  }
+  .lang-menu button:last-child{border-bottom:none;}
+  .lang-menu button:hover{background:var(--kaolin-dim);}
+  .lang-menu button .native{color:var(--geru); font-weight:500;}
+
+  .btn{
+    font-family:var(--mono); font-size:0.78rem; font-weight:500;
+    padding:9px 16px; border:1px solid var(--manganese); cursor:pointer;
+    background:var(--manganese); color:var(--kaolin);
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .btn:hover{ transform:translate(-2px,-2px); box-shadow:3px 3px 0 var(--geru); }
+  .btn.ghost{background:transparent; color:var(--manganese);}
+
+  /* ---------- hero ---------- */
+  .hero{
+    position:relative; color:var(--kaolin);
+    overflow:hidden; padding:100px 0 0;
+    background: radial-gradient(circle at 82% 8%, #d3702f 0%, #8c4a1f 22%, transparent 45%),
+                linear-gradient(180deg, #1c1310 0%, #2c1c14 32%, #4a2818 58%, #6f371a 82%, #8c4a1f 100%);
+  }
+  .hero-motif{ position:absolute; inset:0; opacity:0.12; z-index:1; }
+  .hero-horizon{ position:relative; z-index:2; width:100%; display:block; margin-top:70px; }
+  .hero-inner{ position:relative; z-index:2; max-width:1180px; margin:0 auto; padding:0 28px; }
+  .eyebrow{
+    font-family:var(--mono); font-size:0.78rem; letter-spacing:0.14em;
+    text-transform:uppercase; color:var(--geru); display:flex; align-items:center; gap:10px; margin-bottom:22px;
+  }
+  .eyebrow::before{content:''; width:26px; height:1px; background:var(--geru);}
+  .hero h1{
+    font-family:var(--display); font-weight:600; font-size:clamp(2.6rem,6vw,4.6rem);
+    line-height:1.02; max-width:760px; letter-spacing:-0.01em;
+  }
+  .hero h1 em{ font-style:italic; color:var(--geru); font-weight:500;}
+  .hero p.sub{
+    max-width:520px; margin-top:22px; font-size:1.05rem; color:#D8CEBC;
+  }
+  .search-bar{
+    margin-top:38px; display:flex; max-width:560px;
+    border:1px solid #6b5f54; background:rgba(255,255,255,0.03);
+  }
+  .search-bar input{
+    flex:1; background:none; border:none; padding:16px 18px;
+    color:var(--kaolin); font-family:var(--body); font-size:0.95rem;
+  }
+  .search-bar input::placeholder{color:#8a7d6f;}
+  .search-bar input:focus{outline:none;}
+  .search-bar button{
+    background:var(--geru); border:none; color:var(--kaolin);
+    padding:0 22px; font-family:var(--mono); font-size:0.8rem; cursor:pointer;
+  }
+  .search-bar button:hover{background:var(--geru-dark);}
+
+  .stat-strip{
+    display:flex; gap:0; margin-top:64px; border-top:1px solid #4a4038; flex-wrap:wrap;
+  }
+  .stat{ flex:1; min-width:130px; padding:20px 0; border-right:1px solid #4a4038;}
+  .stat:last-child{border-right:none;}
+  .stat .num{ font-family:var(--display); font-size:1.9rem; color:var(--kaolin); font-weight:600;}
+  .stat .lbl{ font-family:var(--mono); font-size:0.7rem; color:#a89a89; text-transform:uppercase; letter-spacing:0.05em; margin-top:4px;}
+
+  /* ---------- image highlight banner ---------- */
+  /* [UPDATE] .bc-slide now paints a real photo via inline background-image (set in the
+     HTML) instead of the old SVG illustration; .bc-scrim is a dark gradient sitting
+     between the photo and the text so captions stay readable on any image. */
+  .banner-carousel{ position:relative; background:var(--manganese); overflow:hidden; }
+  .bc-track{ display:flex; transition:transform .5s cubic-bezier(.65,0,.35,1); }
+  .bc-slide{
+    min-width:100%; height:380px; position:relative; overflow:hidden;
+    display:flex; align-items:flex-end;
+    background-size:cover; background-position:center;
+  }
+  .bc-scrim{
+    position:absolute; inset:0;
+    background:linear-gradient(90deg, rgba(20,14,10,0.88) 0%, rgba(20,14,10,0.55) 42%, rgba(20,14,10,0.08) 75%);
+  }
+  .bc-copy{ position:relative; z-index:2; padding:36px 40px; max-width:520px; color:var(--kaolin);}
+  .bc-tag{ font-family:var(--mono); font-size:0.72rem; text-transform:uppercase; letter-spacing:0.1em; color:var(--kaolin); opacity:0.8;}
+  .bc-copy h3{ font-family:var(--display); font-size:2.1rem; font-weight:600; margin:8px 0 10px;}
+  .bc-copy p{ font-size:0.92rem; color:#e9e0cf; max-width:440px;}
+  .bc-controls{
+    position:absolute; bottom:16px; right:24px; z-index:3;
+    display:flex; align-items:center; gap:14px;
+  }
+  .bc-arrow{
+    width:34px; height:34px; border:1px solid var(--kaolin); background:rgba(36,29,26,0.4);
+    color:var(--kaolin); font-size:1.2rem; cursor:pointer; line-height:1;
+  }
+  .bc-arrow:hover{ background:var(--geru); border-color:var(--geru); }
+  .bc-dots{ display:flex; gap:7px; }
+  .bc-dots span{
+    width:7px; height:7px; border-radius:50%; background:rgba(239,230,211,0.4); cursor:pointer;
+  }
+  .bc-dots span.active{ background:var(--geru); width:20px; border-radius:4px; }
+  .bc-credit{
+    position:absolute; bottom:16px; left:24px; z-index:3;
+    font-family:var(--mono); font-size:0.65rem; color:rgba(239,230,211,0.55);
+  }
+  @media(max-width:700px){
+    .bc-slide{ height:300px; }
+    .bc-copy{ padding:24px; }
+    .bc-copy h3{ font-size:1.5rem; }
+    .bc-credit{ display:none; }
+  }
+
+  /* ---------- section heading pattern ---------- */
+  .section{ padding:80px 0; }
+  .section-head{ display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:40px; gap:20px; flex-wrap:wrap;}
+  .section-head h2{ font-family:var(--display); font-weight:600; font-size:2.1rem;}
+  .section-head .tag{ font-family:var(--mono); font-size:0.75rem; color:var(--geru); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:8px; display:block;}
+  .section-head p{ max-width:360px; color:var(--manganese-soft); font-size:0.92rem;}
+
+  /* ---------- explore grid ---------- */
+  .tabs{ display:flex; gap:8px; margin-bottom:32px; flex-wrap:wrap;}
+  .tab{
+    font-family:var(--mono); font-size:0.78rem; padding:9px 16px;
+    border:1px solid var(--manganese); background:transparent; cursor:pointer;
+    color:var(--manganese);
+  }
+  .tab.active{ background:var(--manganese); color:var(--kaolin);}
+
+  .grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:24px; }
+  .card{
+    border:1px solid var(--line); background:var(--paper);
+    position:relative; overflow:hidden; transition:transform .2s ease, box-shadow .2s ease;
+    cursor:pointer;
+  }
+  .card:hover{ transform:translateY(-4px); box-shadow:6px 6px 0 var(--manganese); border-color:var(--manganese);}
+  .card-img{
+    height:190px; position:relative; overflow:hidden;
+    display:flex; align-items:center; justify-content:center;
+    color:var(--kaolin);
+  }
+  .card-img svg{width:64px; height:64px; opacity:0.9;}
+  .card-body{ padding:20px; }
+  .card-body .cat{ font-family:var(--mono); font-size:0.68rem; text-transform:uppercase; color:var(--geru); letter-spacing:0.08em;}
+  .card-body h3{ font-family:var(--display); font-size:1.25rem; font-weight:600; margin:8px 0 6px;}
+  .card-body p{ font-size:0.85rem; color:var(--manganese-soft); }
+  .card-foot{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:14px 20px; border-top:1px solid var(--line); font-family:var(--mono); font-size:0.72rem;
+  }
+  .verified{ display:flex; align-items:center; gap:5px; color:var(--gold); font-weight:500;}
+  .verified svg{width:13px;height:13px;}
+
+  /* ---------- state overview stats ---------- */
+  .overview-stats{ display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--manganese); margin-bottom:40px; border:1px solid var(--manganese);}
+  .ov-card{ background:var(--paper); padding:22px 20px; }
+  .ov-num{ font-family:var(--display); font-weight:600; font-size:1.5rem; color:var(--geru);}
+  .ov-lbl{ font-family:var(--mono); font-size:0.7rem; text-transform:uppercase; letter-spacing:0.05em; color:var(--manganese-soft); margin-top:6px;}
+
+  /* ---------- map ---------- */
+  .map-section{ background:var(--kaolin); }
+  .map-wrap{ display:grid; grid-template-columns:1.3fr 1fr; gap:40px; align-items:center; }
+  .map-svg-box{ position:relative; border:1px solid var(--manganese); background:var(--paper); padding:30px; }
+  .map-svg-box svg{ width:100%; height:auto; }
+  .district-dot{ cursor:pointer; transition:r .15s ease; }
+  .district-dot:hover{ fill:var(--geru); }
+  .district-list{ display:flex; flex-direction:column; gap:2px; max-height:380px; overflow:auto;}
+  .district-item{
+    display:flex; justify-content:space-between; padding:13px 16px;
+    border-bottom:1px solid var(--line); font-size:0.88rem; cursor:pointer;
+  }
+  .district-item:hover{ background:rgba(181,69,27,0.08); }
+  .district-item .count{ font-family:var(--mono); font-size:0.72rem; color:var(--manganese-soft); }
+
+  /* ---------- plan your journey ---------- */
+  .plan-section{ background:var(--paper); }
+  .plan-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:24px; }
+  .plan-card{ border:1px solid var(--manganese); padding:30px 26px; background:var(--kaolin); transition:transform .2s ease, box-shadow .2s ease;}
+  .plan-card:hover{ transform:translateY(-4px); box-shadow:6px 6px 0 var(--geru); }
+  .plan-icon{ font-size:1.8rem; margin-bottom:16px;}
+  .plan-card h3{ font-family:var(--display); font-size:1.25rem; font-weight:600; margin-bottom:10px;}
+  .plan-card p{ font-size:0.86rem; color:var(--manganese-soft); margin-bottom:16px; }
+  .plan-link{ font-family:var(--mono); font-size:0.76rem; color:var(--geru); font-weight:500; }
+  .plan-link:hover{ text-decoration:underline; }
+
+  /* ---------- latest highlights ---------- */
+  .highlights-section{ background:var(--manganese); color:var(--kaolin); }
+  .highlights-section .section-head p{ color:#c7bba9; }
+  .highlights-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:1px; background:#4a4038; border:1px solid #4a4038;}
+  .highlight-card{ background:var(--manganese); padding:26px; }
+  .hl-date{ font-family:var(--mono); font-size:0.7rem; color:var(--geru); text-transform:uppercase; letter-spacing:0.06em;}
+  .highlight-card h4{ font-family:var(--display); font-size:1.15rem; font-weight:600; margin:10px 0 8px; }
+  .highlight-card p{ font-size:0.85rem; color:#c7bba9; }
+
+  /* ---------- community / reviews (reddit style) ---------- */
+  /* [UPDATE] --reddit-orange added and used for the credit bar + upvote hover/active
+     state, so the "Reddit-styled" parts of this section are visually consistent. */
+  .community{ background:var(--manganese); color:var(--kaolin); --reddit-orange:#FF4500; }
+  .community .section-head p{ color:#c7bba9; }
+
+  /* [UPDATE] Reddit credit bar — logo, subreddit name, external link button */
+  .reddit-credit-bar{
+    display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:14px;
+    background:#1a1a1b; border:1px solid #343536; padding:14px 18px; margin-bottom:22px;
+  }
+  .reddit-brand{ display:flex; align-items:center; gap:12px; }
+  .reddit-sub{ font-family:var(--body); font-weight:600; font-size:0.92rem; color:var(--kaolin); }
+  .reddit-meta{ font-family:var(--mono); font-size:0.68rem; color:#818384; margin-top:2px; }
+  .reddit-open-btn{
+    display:flex; align-items:center; gap:7px; background:var(--reddit-orange); color:#fff;
+    font-family:var(--body); font-weight:600; font-size:0.82rem; padding:9px 16px; border-radius:999px;
+    transition:background .15s ease;
+  }
+  .reddit-open-btn:hover{ background:#e03d00; }
+
+  .thread{
+    display:flex; gap:16px; padding:22px 0; border-bottom:1px solid #453b34;
+  }
+  .vote{
+    display:flex; flex-direction:column; align-items:center; gap:6px; min-width:36px;
+    font-family:var(--mono); font-size:0.85rem;
+  }
+  .vote button{ background:none; border:none; color:#a89a89; cursor:pointer; font-size:1rem; line-height:1;}
+  .vote button:hover{ color:var(--reddit-orange); }
+  .vote button.upped{ color:var(--reddit-orange); }
+  .thread-body{ flex:1; }
+  .thread-meta{ display:flex; gap:10px; align-items:center; font-family:var(--mono); font-size:0.7rem; color:#a89a89; margin-bottom:8px; flex-wrap:wrap;}
+  .thread-meta .tribe-tag{ background:#3a322c; padding:3px 8px; color:var(--kaolin); }
+  .thread-meta .verified-tag{ color:var(--gold); display:flex; align-items:center; gap:4px;}
+  .thread h4{ font-family:var(--display); font-size:1.1rem; font-weight:600; margin-bottom:6px;}
+  .thread p{ font-size:0.88rem; color:#d3c8b8; margin-bottom:10px;}
+  .thread-foot{ display:flex; gap:18px; font-family:var(--mono); font-size:0.72rem; color:#a89a89;}
+  .thread-foot span{ cursor:pointer; }
+  .thread-foot span:hover{ color:var(--kaolin); }
+  .community-sort{ display:flex; gap:8px; margin-bottom:10px;}
+  .community-sort button{
+    font-family:var(--mono); font-size:0.72rem; background:none; border:1px solid #4a4038; color:#a89a89;
+    padding:6px 12px; cursor:pointer;
+  }
+  .community-sort button.active{ background:var(--reddit-orange); border-color:var(--reddit-orange); color:#fff;}
+  .new-post{
+    margin-top:24px; border:1px dashed #4a4038; padding:16px; display:flex; gap:12px; align-items:center;
+  }
+  .new-post input{
+    flex:1; background:none; border:none; border-bottom:1px solid #4a4038; color:var(--kaolin);
+    padding:8px 4px; font-family:var(--body); font-size:0.88rem;
+  }
+  .new-post input:focus{ outline:none; border-color:var(--reddit-orange); }
+  .new-post input::placeholder{ color:#8a7d6f;}
+
+  /* ---------- craft strip ---------- */
+  .craft-strip{ display:flex; overflow-x:auto; gap:0; border-top:1px solid var(--line); border-bottom:1px solid var(--line);}
+  .craft-item{
+    min-width:220px; padding:26px 24px; border-right:1px solid var(--line);
+    display:flex; flex-direction:column; gap:10px;
+  }
+  .craft-item svg{ width:34px; height:34px; color:var(--geru);}
+  .craft-item h5{ font-family:var(--display); font-size:1.05rem; font-weight:600;}
+  .craft-item p{ font-size:0.78rem; color:var(--manganese-soft); }
+
+  /* ---------- footer ---------- */
+  footer{ background:var(--manganese); color:#a89a89; padding:56px 0 26px;}
+  .footer-top{ display:grid; grid-template-columns:1.4fr 1fr 1fr 1fr; gap:32px; padding-bottom:40px; border-bottom:1px solid #4a4038;}
+  .footer-top h6{ font-family:var(--mono); font-size:0.72rem; text-transform:uppercase; letter-spacing:0.08em; color:var(--kaolin); margin-bottom:14px;}
+  .footer-top a{ display:block; font-size:0.85rem; margin-bottom:9px; color:#a89a89;}
+  .footer-top a:hover{ color:var(--kaolin);}
+  .footer-logo{ font-family:var(--display); font-size:1.4rem; color:var(--kaolin); font-weight:700; margin-bottom:12px;}
+  .footer-bottom{ display:flex; justify-content:space-between; padding-top:22px; font-family:var(--mono); font-size:0.7rem; flex-wrap:wrap; gap:10px;}
+
+  @media(max-width:860px){
+    .nav-links{display:none;}
+    .grid{grid-template-columns:1fr 1fr;}
+    .map-wrap{grid-template-columns:1fr;}
+    .footer-top{grid-template-columns:1fr 1fr;}
+    .overview-stats{grid-template-columns:1fr 1fr;}
+    .plan-grid{grid-template-columns:1fr;}
+    .highlights-grid{grid-template-columns:1fr;}
+  }
+  @media(max-width:560px){
+    .grid{grid-template-columns:1fr;}
+    .stat-strip{display:none;}
+  }
+
+  [data-i18n]{ transition:opacity .15s ease; }
+  .fade{ opacity:0; }
+</style>
+</head>
+<body>
+
+<header>
+  <nav>
+    <div class="logo">
+      <svg viewBox="0 0 40 40" fill="none"><path d="M20 2L36 12V28L20 38L4 28V12L20 2Z" stroke="currentColor" stroke-width="2"/><path d="M20 10L28 15V25L20 30L12 25V15L20 10Z" fill="var(--geru)"/></svg>
+      <!-- [UPDATE] Brand name: Jharokha -> Virasat -->
+      <span>Virasat</span>
+    </div>
+    <div class="nav-links">
+      <a href="#explore" data-i18n="nav_explore">Explore</a>
+      <a href="#crafts" data-i18n="nav_crafts">Crafts</a>
+      <a href="#map" data-i18n="nav_map">Map</a>
+      <a href="#plan" data-i18n="nav_plan">Plan Journey</a>
+      <a href="#community" data-i18n="nav_community">Community</a>
+    </div>
+    <div class="nav-right">
+      <div class="lang-switch">
+        <button class="lang-btn" onclick="toggleLangMenu()">🌐 <span id="curLang">EN</span> ▾</button>
+        <div class="lang-menu" id="langMenu">
+          <button onclick="setLang('en')">English <span class="native">EN</span></button>
+          <button onclick="setLang('hi')">हिन्दी <span class="native">HI</span></button>
+          <button onclick="setLang('sat')">ᱥᱟᱱᱛᱟᱲᱤ Santali <span class="native">SAT</span></button>
+          <button onclick="setLang('nag')">Nagpuri <span class="native">NAG</span></button>
+        </div>
+      </div>
+      <button class="btn" data-i18n="nav_join">Join In</button>
+    </div>
+  </nav>
+</header>
+
+<div class="comb-divider"></div>
+
+<!-- ================= HERO ================= -->
+<section class="hero">
+  <svg class="hero-motif" viewBox="0 0 1200 500" preserveAspectRatio="xMidYMid slice">
+    <circle cx="1000" cy="90" r="140" fill="none" stroke="#EFE6D3" stroke-width="1.5"/>
+    <circle cx="1000" cy="90" r="95" fill="none" stroke="#EFE6D3" stroke-width="1.5"/>
+    <circle cx="1000" cy="90" r="50" fill="none" stroke="#EFE6D3" stroke-width="1.5"/>
+    <path d="M1000 -50 L1000 240 M760 90 L1240 90" stroke="#EFE6D3" stroke-width="1"/>
+  </svg>
+  <div class="hero-inner">
+    <span class="eyebrow" data-i18n="hero_eyebrow">Government-aligned Pilot · State of Jharkhand</span>
+    <h1 data-i18n="hero_title">One <em>Jharkhand</em>. Every monument, craft and story.</h1>
+    <p class="sub" data-i18n="hero_sub">A single verified, multilingual home for Jharkhand's heritage — from Sohrai walls to Sal forests, temple towns to tribal festivals — built with the communities who carry it forward.</p>
+    <div class="search-bar">
+      <input type="text" placeholder="Search: Sohrai painting, Betla, Sarhul festival, Ranchi…" data-i18n-ph="hero_search_ph">
+      <button data-i18n="hero_search_btn">Search</button>
+    </div>
+    <div class="stat-strip">
+      <div class="stat"><div class="num">24</div><div class="lbl" data-i18n="stat_districts">Districts</div></div>
+      <div class="stat"><div class="num">79,714 km²</div><div class="lbl" data-i18n="stat_area">Total area</div></div>
+      <div class="stat"><div class="num">3.3 Cr+</div><div class="lbl" data-i18n="stat_pop">Population (2011 Census)</div></div>
+      <div class="stat"><div class="num">32</div><div class="lbl" data-i18n="stat_tribes">Tribal communities</div></div>
+      <div class="stat"><div class="num">6</div><div class="lbl" data-i18n="stat_langs">Languages supported</div></div>
+    </div>
+  </div>
+
+  <svg class="hero-horizon" viewBox="0 0 1200 160" preserveAspectRatio="none">
+    <path d="M0 120 L60 90 L140 130 L220 70 L300 120 L400 60 L520 125 L600 80 L700 130 L820 65 L920 120 L1000 85 L1100 125 L1200 95 L1200 160 L0 160 Z" fill="#241D1A"/>
+    <g stroke="#241D1A" stroke-width="5" stroke-linecap="round">
+      <path d="M120 140 V95 M100 105 L120 118 L140 105 M105 90 L120 100 L135 90"/>
+      <path d="M340 145 V100 M320 110 L340 122 L360 110 M325 95 L340 105 L355 95"/>
+      <path d="M980 140 V92 M960 102 L980 115 L1000 102 M965 87 L980 97 L995 87"/>
+    </g>
+    <path d="M640 160 V70 L660 55 L680 70 V160 Z M652 55 L668 55 L660 38 Z" fill="#241D1A"/>
+  </svg>
+</section>
+
+<!-- ================= IMAGE HIGHLIGHT BANNER (assaminfo-style) ================= -->
+<!-- [UPDATE] Real photographs added below, sourced from Wikimedia Commons (freely
+     licensed / CC / public-domain files) via a Special:FilePath hotlink — this is the
+     stable Wikimedia URL pattern that doesn't require knowing the file's hash path.
+     Each slide keeps a dark gradient "scrim" (.bc-scrim) over the photo purely for
+     text legibility; swap the background-image URL to replace any photo later. -->
+<section class="banner-carousel" id="bannerCarousel">
+  <div class="bc-track" id="bcTrack">
+    <div class="bc-slide" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/View%20from%20Hundru%20Waterfall%2C%20Jharkhand.jpg?width=1400');">
+      <div class="bc-scrim"></div>
+      <div class="bc-copy">
+        <span class="bc-tag">Waterfall · Ranchi</span>
+        <h3>Hundru Falls</h3>
+        <p>A 98-metre drop on the Subarnarekha river, at its thunderous best just after monsoon.</p>
+      </div>
+    </div>
+    <div class="bc-slide" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Hill%20station%20of%20jharkhand%2CNetarhat.jpg?width=1400');">
+      <div class="bc-scrim"></div>
+      <div class="bc-copy">
+        <span class="bc-tag">Hill Station · Latehar</span>
+        <h3>Netarhat</h3>
+        <p>Known as the "Queen of Chotanagpur" — pine forests, sunrise points and cool highland air.</p>
+      </div>
+    </div>
+    <div class="bc-slide" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Sacred%20Pond%20-%20Baidyanath%20Dham%20Temple%20Complex%20-%20Deoghar.jpg?width=1400');">
+      <div class="bc-scrim"></div>
+      <div class="bc-copy">
+        <span class="bc-tag">Pilgrim Town · Deoghar</span>
+        <h3>Baidyanath Dham</h3>
+        <p>One of twelve Jyotirlingas in India, drawing lakhs of devotees during Shravani Mela.</p>
+      </div>
+    </div>
+    <div class="bc-slide" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Entrance%20of%20Betla%20national%20park.jpg?width=1400');">
+      <div class="bc-scrim"></div>
+      <div class="bc-copy">
+        <span class="bc-tag">Wildlife · Latehar</span>
+        <h3>Betla National Park</h3>
+        <p>Tigers, elephants and a 16th-century Chero fort, inside one of India's earliest tiger reserves.</p>
+      </div>
+    </div>
+    <div class="bc-slide" style="background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Sohrai%20and%20Kohbar%20Paintings%2001.jpg?width=1400');">
+      <div class="bc-scrim"></div>
+      <div class="bc-copy">
+        <span class="bc-tag">Living Craft · Hazaribagh</span>
+        <h3>Sohrai &amp; Khovar Painting</h3>
+        <p>Finger-painted harvest murals in natural ochre and kaolin, made fresh every season.</p>
+      </div>
+    </div>
+  </div>
+  <div class="bc-controls">
+    <button class="bc-arrow" onclick="bcMove(-1)">‹</button>
+    <div class="bc-dots" id="bcDots"></div>
+    <button class="bc-arrow" onclick="bcMove(1)">›</button>
+  </div>
+  <span class="bc-credit">Photos: Wikimedia Commons contributors</span>
+</section>
+
+<div class="comb-divider flip"></div>
+
+<!-- ================= EXPLORE ================= -->
+<section class="section" id="explore">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <span class="tag" data-i18n="explore_tag">Browse the archive</span>
+        <h2 data-i18n="explore_title">Explore heritage, by kind</h2>
+      </div>
+      <p data-i18n="explore_sub">Every entry is field-verified with local custodians before it's published.</p>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" onclick="filterTab(this,'all')" data-i18n="tab_all">All</button>
+      <button class="tab" onclick="filterTab(this,'monument')" data-i18n="tab_monuments">Monuments</button>
+      <button class="tab" onclick="filterTab(this,'craft')" data-i18n="tab_crafts">Crafts</button>
+      <button class="tab" onclick="filterTab(this,'festival')" data-i18n="tab_festivals">Festivals</button>
+      <button class="tab" onclick="filterTab(this,'story')" data-i18n="tab_stories">Oral Stories</button>
+    </div>
+
+    <div class="grid" id="exploreGrid">
+      <div class="card" data-cat="monument">
+        <div class="card-img" style="background:linear-gradient(160deg,#6b4a2e,#3d2c1c);">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M4 20V10L12 4L20 10V20H4Z" stroke="currentColor" stroke-width="1.5"/><path d="M9 20V14H15V20" stroke="currentColor" stroke-width="1.5"/></svg>
+        </div>
+        <div class="card-body">
+          <span class="cat">Monument · Deoghar</span>
+          <h3>Baidyanath Dham</h3>
+          <p>One of twelve Jyotirlingas, with oral histories from three generations of temple priests.</p>
+        </div>
+        <div class="card-foot">
+          <span class="verified"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L14.5 6.5L19.5 7L16 10.5L17 15.5L12 13L7 15.5L8 10.5L4.5 7L9.5 6.5L12 2Z"/></svg> Verified</span>
+          <span>★ 4.8 · 212 reviews</span>
+        </div>
+      </div>
+
+      <div class="card" data-cat="craft">
+        <div class="card-img" style="background:linear-gradient(160deg,#B5451B,#5c2410);">
+          <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.5"/></svg>
+        </div>
+        <div class="card-body">
+          <span class="cat">Craft · Hazaribagh</span>
+          <h3>Sohrai &amp; Khovar Painting</h3>
+          <p>Finger-painted mud wall murals made during harvest, using natural ochre and kaolin pigments.</p>
+        </div>
+        <div class="card-foot">
+          <span class="verified"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L14.5 6.5L19.5 7L16 10.5L17 15.5L12 13L7 15.5L8 10.5L4.5 7L9.5 6.5L12 2Z"/></svg> Verified</span>
+          <span>★ 4.9 · 340 reviews</span>
+        </div>
+      </div>
+
+      <div class="card" data-cat="festival">
+        <div class="card-img" style="background:linear-gradient(160deg,#4C6B41,#233d1c);">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 3C12 8 8 9 8 14a4 4 0 0 0 8 0c0-5-4-6-4-11Z" stroke="currentColor" stroke-width="1.5"/><path d="M12 18v3" stroke="currentColor" stroke-width="1.5"/></svg>
+        </div>
+        <div class="card-body">
+          <span class="cat">Festival · State-wide</span>
+          <h3>Sarhul</h3>
+          <p>The Sal-flower spring festival marking the tribal new year, led by the village Pahan priest.</p>
+        </div>
+        <div class="card-foot">
+          <span class="verified"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L14.5 6.5L19.5 7L16 10.5L17 15.5L12 13L7 15.5L8 10.5L4.5 7L9.5 6.5L12 2Z"/></svg> Verified</span>
+          <span>★ 4.7 · 156 reviews</span>
+        </div>
+      </div>
+
+      <div class="card" data-cat="craft">
+        <div class="card-img" style="background:linear-gradient(160deg,#8a7245,#3a2f1c);">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h16M4 18h10" stroke="currentColor" stroke-width="1.5"/></svg>
+        </div>
+        <div class="card-body">
+          <span class="cat">Craft · Chaibasa</span>
+          <h3>Paitkar Scroll Painting</h3>
+          <p>Vertical scroll narratives sung by artists, illustrating creation myths panel by panel.</p>
+        </div>
+        <div class="card-foot">
+          <span class="verified"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L14.5 6.5L19.5 7L16 10.5L17 15.5L12 13L7 15.5L8 10.5L4.5 7L9.5 6.5L12 2Z"/></svg> Verified</span>
+          <span>★ 4.6 · 89 reviews</span>
+        </div>
+      </div>
+
+      <div class="card" data-cat="story">
+        <div class="card-img" style="background:linear-gradient(160deg,#2A2420,#000);">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M4 4h16v14H8l-4 4V4Z" stroke="currentColor" stroke-width="1.5"/></svg>
+        </div>
+        <div class="card-body">
+          <span class="cat">Oral Story · Santhal Pargana</span>
+          <h3>How the Santhal Came from Hihiri Pipiri</h3>
+          <p>An origin story passed down by elders, recorded in Santhali with subtitle translation.</p>
+        </div>
+        <div class="card-foot">
+          <span class="verified"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L14.5 6.5L19.5 7L16 10.5L17 15.5L12 13L7 15.5L8 10.5L4.5 7L9.5 6.5L12 2Z"/></svg> Verified</span>
+          <span>★ 4.9 · 64 reviews</span>
+        </div>
+      </div>
+
+      <div class="card" data-cat="monument">
+        <div class="card-img" style="background:linear-gradient(160deg,#3d5c3a,#101e0c);">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M3 18c3-8 6-3 9-11 3 8 6 3 9 11" stroke="currentColor" stroke-width="1.5"/></svg>
+        </div>
+        <div class="card-body">
+          <span class="cat">Monument · Latehar</span>
+          <h3>Betla National Park &amp; Fort</h3>
+          <p>A 16th-century Chero fort inside India's early Project Tiger reserve.</p>
+        </div>
+        <div class="card-foot">
+          <span class="verified"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L14.5 6.5L19.5 7L16 10.5L17 15.5L12 13L7 15.5L8 10.5L4.5 7L9.5 6.5L12 2Z"/></svg> Verified</span>
+          <span>★ 4.7 · 198 reviews</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CRAFT STRIP ================= -->
+<div class="craft-strip" id="crafts">
+  <div class="craft-item">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="4" width="16" height="16"/><path d="M4 10h16M10 4v16"/></svg>
+    <h5>Dokra Metal Casting</h5>
+    <p>Lost-wax bronze figures from Khunti &amp; Chaibasa</p>
+  </div>
+  <div class="craft-item">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3v18M4 12h16"/><circle cx="12" cy="12" r="9"/></svg>
+    <h5>Terracotta of Bhelwara</h5>
+    <p>Wheel-thrown ritual horses and figures</p>
+  </div>
+  <div class="craft-item">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 20 20 4M4 4l16 16"/></svg>
+    <h5>Bamboo &amp; Cane Weave</h5>
+    <p>Sup, dala and daily-use baskets</p>
+  </div>
+  <div class="craft-item">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="8"/><path d="M12 4v16M4 12h16"/></svg>
+    <h5>Tussar Silk Weaving</h5>
+    <p>Handloom silk from the Sal forest belt</p>
+  </div>
+  <div class="craft-item">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 12c3-6 6-6 9 0s6 6 9 0"/></svg>
+    <h5>Chhau Mask-Making</h5>
+    <p>Papier-mâché masks for Seraikella Chhau dance</p>
+  </div>
+</div>
+
+<!-- ================= MAP + STATE OVERVIEW ================= -->
+<section class="section map-section" id="map">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <span class="tag">Geo-explorer · State overview</span>
+        <h2>Walk through the districts</h2>
+      </div>
+      <p>Tap a city to see its verified crafts, sites and custodian contacts.</p>
+    </div>
+
+    <div class="overview-stats">
+      <div class="ov-card"><div class="ov-num">79,714 km²</div><div class="ov-lbl">Total area</div></div>
+      <div class="ov-card"><div class="ov-num">3,29,88,134</div><div class="ov-lbl">Population (2011 Census, ~3.3 Cr)</div></div>
+      <div class="ov-card"><div class="ov-num">24</div><div class="ov-lbl">Districts</div></div>
+      <div class="ov-card"><div class="ov-num">Ranchi</div><div class="ov-lbl">Capital city</div></div>
+    </div>
+
+    <div class="map-wrap">
+      <div class="map-svg-box">
+        <svg viewBox="0 0 300 320" style="font-family:'IBM Plex Mono',monospace;">
+          <path d="M40 40 L120 20 L200 40 L260 90 L250 160 L270 220 L200 280 L120 300 L60 260 L30 190 L50 120 Z" fill="var(--kaolin)" stroke="var(--manganese)" stroke-width="2"/>
+
+          <circle class="district-dot" cx="90" cy="90" r="5.5" fill="var(--sal)" onclick="selectDistrict('Hazaribagh')"/>
+          <text x="98" y="88" font-size="9" fill="var(--manganese)">Hazaribagh</text>
+
+          <circle class="district-dot" cx="150" cy="65" r="5.5" fill="var(--sal)" onclick="selectDistrict('Giridih')"/>
+          <text x="158" y="63" font-size="9" fill="var(--manganese)">Giridih</text>
+
+          <circle class="district-dot" cx="225" cy="75" r="5.5" fill="var(--sal)" onclick="selectDistrict('Dhanbad')"/>
+          <text x="200" y="60" font-size="9" fill="var(--manganese)">Dhanbad</text>
+
+          <circle class="district-dot" cx="195" cy="100" r="5.5" fill="var(--sal)" onclick="selectDistrict('Bokaro')"/>
+          <text x="176" y="112" font-size="9" fill="var(--manganese)">Bokaro</text>
+
+          <circle class="district-dot" cx="215" cy="130" r="5.5" fill="var(--sal)" onclick="selectDistrict('Deoghar')"/>
+          <text x="223" y="128" font-size="9" fill="var(--manganese)">Deoghar</text>
+
+          <circle class="district-dot" cx="248" cy="165" r="5.5" fill="var(--sal)" onclick="selectDistrict('Dumka')"/>
+          <text x="215" y="180" font-size="9" fill="var(--manganese)">Dumka</text>
+
+          <!-- Ranchi (capital) -->
+          <path d="M120 150 l3.5 7 7.5 1 -5.5 5.5 1.3 7.5 -6.8 -3.7 -6.8 3.7 1.3 -7.5 -5.5 -5.5 7.5 -1 Z" fill="var(--gold)"/>
+          <text x="132" y="152" font-size="9" font-weight="600" fill="var(--manganese)">Ranchi ★</text>
+
+          <circle class="district-dot" cx="170" cy="245" r="5.5" fill="var(--sal)" onclick="selectDistrict('Jamshedpur')"/>
+          <text x="150" y="262" font-size="9" fill="var(--manganese)">Jamshedpur</text>
+
+          <circle class="district-dot" cx="85" cy="225" r="5.5" fill="var(--sal)" onclick="selectDistrict('Chaibasa')"/>
+          <text x="40" y="242" font-size="9" fill="var(--manganese)">West Singhbhum</text>
+        </svg>
+      </div>
+      <div class="district-list" id="districtList">
+        <div class="district-item" onclick="selectDistrict('Ranchi')"><span>Ranchi <em style="color:var(--gold); font-style:normal;">· Capital</em></span><span class="count">41 entries</span></div>
+        <div class="district-item" onclick="selectDistrict('Jamshedpur')"><span>Jamshedpur <em style="color:var(--manganese-soft); font-style:normal;">· Largest city</em></span><span class="count">33 entries</span></div>
+        <div class="district-item" onclick="selectDistrict('Dhanbad')"><span>Dhanbad</span><span class="count">20 entries</span></div>
+        <div class="district-item" onclick="selectDistrict('Bokaro')"><span>Bokaro</span><span class="count">16 entries</span></div>
+        <div class="district-item" onclick="selectDistrict('Hazaribagh')"><span>Hazaribagh</span><span class="count">28 entries</span></div>
+        <div class="district-item" onclick="selectDistrict('Deoghar')"><span>Deoghar</span><span class="count">19 entries</span></div>
+        <div class="district-item" onclick="selectDistrict('Giridih')"><span>Giridih</span><span class="count">14 entries</span></div>
+        <div class="district-item" onclick="selectDistrict('Dumka')"><span>Dumka <em style="color:var(--manganese-soft); font-style:normal;">· Sub-capital</em></span><span class="count">18 entries</span></div>
+        <div class="district-item" onclick="selectDistrict('Chaibasa')"><span>West Singhbhum</span><span class="count">25 entries</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PLAN YOUR JOURNEY ================= -->
+<section class="section plan-section" id="plan">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <span class="tag">Next steps</span>
+        <h2>Plan your journey</h2>
+      </div>
+      <p>Start with travel routes, the live map, or a partnership conversation.</p>
+    </div>
+    <div class="plan-grid">
+      <div class="plan-card">
+        <div class="plan-icon">✈️</div>
+        <h3>How to reach Jharkhand</h3>
+        <p>Birsa Munda Airport (Ranchi) connects to major metros; Ranchi, Dhanbad &amp; Tatanagar Junctions sit on key rail lines; NH-33 and NH-2 link the state by road.</p>
+        <a href="#" class="plan-link">Travel options →</a>
+      </div>
+      <div class="plan-card">
+        <div class="plan-icon">🤝</div>
+        <h3>Partnership &amp; contribution</h3>
+        <p>Artisan collectives, homestays, tribal welfare boards and tourism operators can onboard as verified custodians or listing partners.</p>
+        <a href="#" class="plan-link">Partner with us →</a>
+      </div>
+      <div class="plan-card">
+        <div class="plan-icon">🗺️</div>
+        <h3>Interactive map</h3>
+        <p>Browse all 24 districts, filter by craft, monument or festival, and get custodian contacts before you travel.</p>
+        <a href="#map" class="plan-link">Open the map →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= LATEST HIGHLIGHTS ================= -->
+<section class="section highlights-section">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <span class="tag">Fresh from the field</span>
+        <h2>Latest highlights</h2>
+      </div>
+      <p>Newly verified entries and things happening across the state right now.</p>
+    </div>
+    <div class="highlights-grid">
+      <div class="highlight-card">
+        <span class="hl-date">12 Aug 2026</span>
+        <h4>Sarhul dates announced for 32 villages</h4>
+        <p>Village Pahans across Khunti and Gumla have confirmed this year's Sarhul calendar — now live on the festival tracker.</p>
+      </div>
+      <div class="highlight-card">
+        <span class="hl-date">08 Aug 2026</span>
+        <h4>14 new Sohrai artists verified in Hazaribagh</h4>
+        <p>A field visit with the Tribal Welfare Department added 14 new custodian profiles and 40 mural photographs.</p>
+      </div>
+      <div class="highlight-card">
+        <span class="hl-date">03 Aug 2026</span>
+        <h4>Betla National Park audio-guide now in Nagpuri</h4>
+        <p>Visitors can now switch the fort &amp; safari audio-guide to Nagpuri alongside Hindi and English.</p>
+      </div>
+      <div class="highlight-card">
+        <span class="hl-date">28 Jul 2026</span>
+        <h4>Shravani Mela route advisory, Deoghar</h4>
+        <p>Kanwar route and shuttle timings for the upcoming Mela have been added to the Baidyanath Dham listing.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= COMMUNITY (reddit style) ================= -->
+<!-- [UPDATE] This section is now explicitly credited to Reddit: a reddit-credit-bar
+     with an inline SVG replica of the Reddit "Snoo" mark, the r/ subreddit-style name,
+     and Reddit's brand orange (#FF4500, set as --reddit-orange below) applied to the
+     upvote arrows/badges so the whole block visually reads as "styled like Reddit". -->
+<section class="section community" id="community">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <span class="tag" style="color:var(--geru);">Community reviews</span>
+        <h2>What people are saying</h2>
+      </div>
+      <p>Upvote the most useful field notes. Local contributors carry a verified badge.</p>
+    </div>
+
+    <!-- [UPDATE] Reddit credit bar: logo + subreddit-style name + external link -->
+    <div class="reddit-credit-bar">
+      <div class="reddit-brand">
+        <svg width="30" height="30" viewBox="0 0 20 20" fill="none">
+          <circle cx="10" cy="10" r="10" fill="#FF4500"/>
+          <circle cx="10" cy="11.4" r="5.6" fill="#fff"/>
+          <circle cx="7.1" cy="11.4" r="1" fill="#FF4500"/>
+          <circle cx="12.9" cy="11.4" r="1" fill="#FF4500"/>
+          <path d="M7.3 13.6c.7.6 1.7.9 2.7.9s2-.3 2.7-.9" stroke="#FF4500" stroke-width="0.8" stroke-linecap="round" fill="none"/>
+          <circle cx="14.6" cy="8.6" r="1.4" fill="#fff"/>
+          <path d="M14.6 8.6 15.2 5" stroke="#fff" stroke-width="0.8"/>
+          <circle cx="10" cy="6.4" r="1" fill="#fff"/>
+        </svg>
+        <div>
+          <div class="reddit-sub">r/VirasatJharkhand</div>
+          <div class="reddit-meta">Discussion format powered by Reddit · 12.4k members</div>
+        </div>
+      </div>
+      <a href="https://www.reddit.com" target="_blank" rel="noopener" class="reddit-open-btn">
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="#fff"/><circle cx="10" cy="11.4" r="5.6" fill="#FF4500"/><circle cx="7.1" cy="11.4" r="1" fill="#fff"/><circle cx="12.9" cy="11.4" r="1" fill="#fff"/></svg>
+        Open on Reddit ↗
+      </a>
+    </div>
+
+    <div class="community-sort">
+      <button class="active">Top</button>
+      <button>New</button>
+      <button>Most Discussed</button>
+    </div>
+
+    <div id="threadList">
+      <div class="thread">
+        <div class="vote">
+          <button onclick="upvote(this)">▲</button>
+          <span class="count">238</span>
+          <button onclick="downvote(this)">▼</button>
+        </div>
+        <div class="thread-body">
+          <div class="thread-meta">
+            <span>u/sohrai_savitri</span>
+            <span class="verified-tag">✓ Local Artist, Hazaribagh</span>
+            <span class="tribe-tag">Kurmi community</span>
+            <span>· 3d ago</span>
+          </div>
+          <h4>The AI translation actually got our Khovar terms right</h4>
+          <p>Most apps romanize our words wrong. This kept the original meaning of "khovar" (marriage cave-painting) instead of just calling it "wall art." Small thing, but it matters.</p>
+          <div class="thread-foot"><span>💬 42 comments</span><span>↗ Share</span><span>🚩 Report</span></div>
+        </div>
+      </div>
+
+      <div class="thread">
+        <div class="vote">
+          <button onclick="upvote(this)">▲</button>
+          <span class="count">171</span>
+          <button onclick="downvote(this)">▼</button>
+        </div>
+        <div class="thread-body">
+          <div class="thread-meta">
+            <span>u/rahul_travels_jh</span>
+            <span class="tribe-tag">Visitor</span>
+            <span>· 6d ago</span>
+          </div>
+          <h4>Betla fort entry, add the mud path warning</h4>
+          <p>Loved the audio-guide feature at the fort. One suggestion: the west trail floods in monsoon, could use a note for other visitors.</p>
+          <div class="thread-foot"><span>💬 18 comments</span><span>↗ Share</span><span>🚩 Report</span></div>
+        </div>
+      </div>
+
+      <div class="thread">
+        <div class="vote">
+          <button onclick="upvote(this)">▲</button>
+          <span class="count">96</span>
+          <button onclick="downvote(this)">▼</button>
+        </div>
+        <div class="thread-body">
+          <div class="thread-meta">
+            <span>u/tribal.folklore</span>
+            <span class="verified-tag">✓ Oral Historian, Dumka</span>
+            <span class="tribe-tag">Santhal community</span>
+            <span>· 1w ago</span>
+          </div>
+          <h4>Recorded a second version of the Hihiri Pipiri story</h4>
+          <p>My grandmother tells it slightly differently from the one currently listed — added it as an alternate version rather than a correction, since both are valid oral traditions.</p>
+          <div class="thread-foot"><span>💬 27 comments</span><span>↗ Share</span><span>🚩 Report</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="new-post">
+      <span style="font-family:var(--mono); font-size:0.78rem; color:#a89a89;">Add a note ›</span>
+      <input type="text" placeholder="Share a review, correction, or memory tied to a place...">
+      <button class="btn" style="background:var(--geru); border-color:var(--geru);">Post</button>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer>
+  <div class="wrap">
+    <div class="footer-top">
+      <div>
+        <div class="footer-logo">Virasat</div>
+        <p style="font-size:0.85rem; max-width:260px;">A window into Jharkhand's living heritage — built with the communities who carry it forward. SIH MVP prototype.</p>
+      </div>
+      <div>
+        <h6>Explore</h6>
+        <a href="#explore">Monuments</a>
+        <a href="#crafts">Crafts</a>
+        <a href="#map">District Map</a>
+        <a href="#plan">Plan Your Journey</a>
+      </div>
+      <div>
+        <h6>Platform</h6>
+        <a href="#">How verification works</a>
+        <a href="#">For local contributors</a>
+        <a href="#">API for researchers</a>
+      </div>
+      <div>
+        <h6>Languages</h6>
+        <a href="#">English</a>
+        <a href="#">हिन्दी</a>
+        <a href="#">ᱥᱟᱱᱛᱟᱲᱤ Santali</a>
+        <a href="#">Nagpuri</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Virasat — Smart India Hackathon Prototype</span>
+      <span>Built for Jharkhand, with its people</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // ---------- language switcher ----------
+  const i18n = {
+    en: {
+      nav_explore:"Explore", nav_crafts:"Crafts", nav_map:"Map", nav_plan:"Plan Journey", nav_community:"Community", nav_join:"Join In",
+      hero_eyebrow:"Jharkhand · Digital Heritage Archive",
+      hero_title:"The wall art never fades here.",
+      hero_sub:"Verified stories, crafts and monuments of Jharkhand — narrated by the communities who keep them alive, in the language you think in.",
+      hero_search_btn:"Search",
+      stat_districts:"Districts mapped", stat_tribes:"Tribal communities", stat_entries:"Verified entries", stat_langs:"Languages supported",
+      explore_tag:"Browse the archive", explore_title:"Explore heritage, by kind", explore_sub:"Every entry is field-verified with local custodians before it's published.",
+      tab_all:"All", tab_monuments:"Monuments", tab_crafts:"Crafts", tab_festivals:"Festivals", tab_stories:"Oral Stories"
+    },
+    hi: {
+      nav_explore:"अन्वेषण", nav_crafts:"शिल्प", nav_map:"मानचित्र", nav_plan:"यात्रा योजना", nav_community:"समुदाय", nav_join:"जुड़ें",
+      hero_eyebrow:"झारखंड · डिजिटल विरासत संग्रह",
+      hero_title:"यहाँ दीवार कला कभी फीकी नहीं पड़ती।",
+      hero_sub:"झारखंड की सत्यापित कहानियाँ, शिल्प और स्मारक — उन्हीं समुदायों की आवाज़ में, जिस भाषा में आप सोचते हैं।",
+      hero_search_btn:"खोजें",
+      stat_districts:"मानचित्रित जिले", stat_tribes:"जनजातीय समुदाय", stat_entries:"सत्यापित प्रविष्टियाँ", stat_langs:"समर्थित भाषाएँ",
+      explore_tag:"संग्रह ब्राउज़ करें", explore_title:"प्रकार अनुसार विरासत देखें", explore_sub:"प्रकाशित होने से पहले हर प्रविष्टि को स्थानीय संरक्षकों द्वारा सत्यापित किया जाता है।",
+      tab_all:"सभी", tab_monuments:"स्मारक", tab_crafts:"शिल्प", tab_festivals:"त्योहार", tab_stories:"मौखिक कथाएँ"
+    },
+    sat: {
+      nav_explore:"Nel", nav_crafts:"Kami", nav_map:"Naksa", nav_plan:"Sena Bandobos", nav_community:"Samaj", nav_join:"Michaɽ",
+      hero_eyebrow:"Jharkhand · Digital Baba Hisir",
+      hero_title:"Nendé oṛak̕ cítár bang buhi ge.",
+      hero_sub:"Jharkhand reyaʼ satya khobor, kami ar thaan — okoe samaj do sanam tahenkoa, am͂aʼ rohoṛ te.",
+      hero_search_btn:"Nel",
+      stat_districts:"Jila naksa", stat_tribes:"Hor samaj", stat_entries:"Satya khobor", stat_langs:"Rohoṛ",
+      explore_tag:"Hisir nel", explore_title:"Baba hisir, lekha lekha", explore_sub:"Uduk sen ge okoe hisir do gramreaʼ khon satya akana.",
+      tab_all:"Sanam", tab_monuments:"Thaan", tab_crafts:"Kami", tab_festivals:"Parab", tab_stories:"Katha"
+    },
+    nag: {
+      nav_explore:"Ghumo", nav_crafts:"Hunar", nav_map:"Naksha", nav_plan:"Yatra Yojana", nav_community:"Samaj", nav_join:"Judav",
+      hero_eyebrow:"Jharkhand · Digital Virasat Bhandar",
+      hero_title:"Ye dewaal ke chitr kabhu na mitay.",
+      hero_sub:"Jharkhand ke satyapit kahani, hunar aur thaan — okra samaj ke bolat me, jekra bhasha me tu sochela.",
+      hero_search_btn:"Khoje",
+      stat_districts:"Jila", stat_tribes:"Adivasi samaj", stat_entries:"Satyapit entry", stat_langs:"Bhasha",
+      explore_tag:"Bhandar dekho", explore_title:"Virasat ke prakar se dekho", explore_sub:"Chhape se pahile har entry ke sthaniya log satyapit karela.",
+      tab_all:"Sabh", tab_monuments:"Thaan", tab_crafts:"Hunar", tab_festivals:"Tyohaar", tab_stories:"Kahani"
+    }
+  };
+  const labelMap = {en:'EN', hi:'HI', sat:'SAT', nag:'NAG'};
+
+  function toggleLangMenu(){ document.getElementById('langMenu').classList.toggle('open'); }
+  document.addEventListener('click', (e)=>{
+    if(!e.target.closest('.lang-switch')) document.getElementById('langMenu').classList.remove('open');
+  });
+
+  function setLang(code){
+    document.getElementById('curLang').textContent = labelMap[code];
+    const dict = i18n[code];
+    document.querySelectorAll('[data-i18n]').forEach(el=>{
+      const key = el.getAttribute('data-i18n');
+      if(dict[key]){
+        el.classList.add('fade');
+        setTimeout(()=>{ el.textContent = dict[key]; el.classList.remove('fade'); }, 120);
+      }
+    });
+    document.getElementById('langMenu').classList.remove('open');
+  }
+
+  // ---------- explore tab filter ----------
+  function filterTab(btn, cat){
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('#exploreGrid .card').forEach(c=>{
+      c.style.display = (cat==='all' || c.dataset.cat===cat) ? '' : 'none';
+    });
+  }
+
+  // ---------- image highlight banner carousel ----------
+  const bcTrack = document.getElementById('bcTrack');
+  const bcDotsWrap = document.getElementById('bcDots');
+  const bcSlideCount = document.querySelectorAll('.bc-slide').length;
+  let bcIndex = 0;
+  for(let i=0;i<bcSlideCount;i++){
+    const d = document.createElement('span');
+    if(i===0) d.classList.add('active');
+    d.onclick = ()=>bcGoTo(i);
+    bcDotsWrap.appendChild(d);
+  }
+  function bcRender(){
+    bcTrack.style.transform = `translateX(-${bcIndex*100}%)`;
+    document.querySelectorAll('.bc-dots span').forEach((d,i)=>d.classList.toggle('active', i===bcIndex));
+  }
+  function bcMove(dir){
+    bcIndex = (bcIndex + dir + bcSlideCount) % bcSlideCount;
+    bcRender();
+  }
+  function bcGoTo(i){ bcIndex = i; bcRender(); }
+  let bcAuto = setInterval(()=>bcMove(1), 5000);
+  document.getElementById('bannerCarousel').addEventListener('mouseenter', ()=>clearInterval(bcAuto));
+  document.getElementById('bannerCarousel').addEventListener('mouseleave', ()=>{ bcAuto = setInterval(()=>bcMove(1), 5000); });
+
+  // ---------- district select ----------
+  function selectDistrict(name){
+    document.querySelectorAll('.district-item').forEach(d=>{
+      d.style.background = d.querySelector('span').textContent.includes(name) ? 'rgba(181,69,27,0.14)' : '';
+    });
+  }
+
+  // ---------- voting ----------
+  function upvote(btn){
+    const countEl = btn.parentElement.querySelector('.count');
+    countEl.textContent = parseInt(countEl.textContent) + 1;
+    btn.classList.add('upped');
+  }
+  function downvote(btn){
+    const countEl = btn.parentElement.querySelector('.count');
+    countEl.textContent = Math.max(0, parseInt(countEl.textContent) - 1);
+  }
+</script>
+<script>
+const searchInput = document.querySelector('.search-bar input');
+const searchButton = document.querySelector('.search-bar button');
+
+searchButton.addEventListener('click', async () => {
+  const question = searchInput.value.trim();
+
+  if (!question) {
+    alert("Please enter a question.");
+    return;
+  }
+
+  searchButton.textContent = "Thinking...";
+  searchButton.disabled = true;
+
+  try {
+    const response = await fetch('/.netlify/functions/ask-ai', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        question: question
+      })
+    });
+
+    const data = await response.json();
+
+    if (data.error) {
+      throw new Error(data.error);
+    }
+
+    alert(data.answer);
+
+  } catch (error) {
+    alert("AI error: " + error.message);
+  }
+
+  searchButton.textContent = "Search";
+  searchButton.disabled = false;
+});
+</script>
+</body>
+</html>
